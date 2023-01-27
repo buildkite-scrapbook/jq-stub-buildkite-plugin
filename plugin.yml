@@ -1,0 +1,7 @@
+name: JQ Stub
+description: Testing jq stub for buildkite-plugin-tester
+author: https://github.com/frankpengau
+requirements: []
+configuration: 
+  properties: {}
+  additionalProperties: false

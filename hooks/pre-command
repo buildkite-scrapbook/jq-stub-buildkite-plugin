@@ -1,0 +1,4 @@
+#!/bin/bash
+set -euo pipefail
+# https://ss64.com/bash/set.html
+# set -x #trace

@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+  tests:
+    # image: buildkite/plugin-tester:latest
+    image: frankpengau/buildkite-plugin-tester:custom-minor-release-bats-mock-v2-1-2
+    stdin_open: true # equivalent of -i
+    tty: true        # equivalent of -t
+    command: "/bin/bash"
+    volumes:
+      - ".:/plugin"

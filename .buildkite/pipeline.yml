@@ -1,0 +1,14 @@
+steps:
+
+  - label: ":shell: BATS with buildkite-plugin-tester"
+    command: "bats tests/"
+    plugins:
+      - docker#v5.3.0:
+          # image: buildkite/plugin-tester:latest
+          image: frankpengau/buildkite-plugin-tester:custom-minor-release-bats-mock-v2-1-2
+          workdir: /plugin
+
+  - label: ":shell: Shellcheck for syntax validation and improvements"
+    plugins:
+      - shellcheck#v1.3.0:
+          files: hooks/**
