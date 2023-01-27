@@ -2,3 +2,51 @@
 set -euo pipefail
 # https://ss64.com/bash/set.html
 # set -x #trace
+
+# env = development (dev), staging (stag), production (prod)
+# level = experiment (exp), dogfood (dog), alpha, beta, general release (ga)
+# accounts = master, restricted, mobile, web, desktop, developer friendly (devfriend), quality assurance (qa), preview (pre), internal assets (intass), external assets (extass)
+
+
+parse_environment_level() {
+   env=$(echo "$1" | tr '[:upper:]' '[:lower:]')
+   level=$(echo "$2" | tr '[:upper:]' '[:lower:]')
+   aws_accounts=$3
+
+   # NB no audit secure or control general returned from organizations (yet)
+   if [[ "${env}" == "dev" && "${level}" == "exp" ]]; then
+     echo "arn:aws:iam::123456789012:role/dev-exp-role"
+   elif [[ "${env}" == "dev" && "${level}" == "dog" ]]; then
+     echo "arn:aws:iam::123456789012:role/dev-dog-role"
+   elif [[ "${env}" == "stag" && "${level}" == "dog" ]]; then
+     echo "arn:aws:iam::123456123456:role/stag-dog-role"
+   else {
+     if [[ "${level}" == "alpha" ]]; then
+       level_name="alpha"
+     elif [[ "${level}" == "beta" ]]; then
+       level_name="beta"
+     else
+       level_name="ga"
+     fi
+     level_name_uppercase=$(echo "${level_name}" | tr '[:lower:]' '[:upper:]')
+     account_id=$(echo "${aws_accounts}" | jq --arg level_name_uppercase "${level_name_uppercase}" '.Accounts[] | select(.Name|ascii_upcase == $level_name_uppercase ).Id' | jq -r '.')
+     echo "arn:aws:iam::${account_id}:role/env-level-admin"
+   }
+   fi
+}
+
+AWS_ACCOUNTS=$(aws organizations list-accounts --no-paginate)
+echo "AWS_ACCOUNTS: ${AWS_ACCOUNTS}"
+AWS_ROLE_ARN=$(parse_environment_level "${env}" "${level}" "${AWS_ACCOUNTS}")
+AWS_ROLE_SESSION_NAME="${env}-${level}-session"
+
+CREDENTIALS=$(aws sts assume-role --role-arn "${AWS_ROLE_ARN}" --role-session-name "${AWS_ROLE_SESSION_NAME}")
+AWS_ACCESS_KEY_ID=$(echo "${CREDENTIALS}" | jq -r .Credentials.AccessKeyId)
+AWS_SECRET_ACCESS_KEY=$(echo "${CREDENTIALS}" | jq -r .Credentials.SecretAccessKey)
+AWS_SESSION_TOKEN=$(echo "${CREDENTIALS}" | jq -r .Credentials.SessionToken)
+
+export AWS_ACCESS_KEY_ID
+export AWS_SECRET_ACCESS_KEY
+export AWS_SESSION_TOKEN
+
+echo "finished"
