@@ -2,7 +2,7 @@
 
 load '/usr/local/lib/bats/load.bash'
 
-# export JQ_STUB_DEBUG=3
+export JQ_STUB_DEBUG=3
 
 
 # aws sts assume-role --role-arn arn:aws:iam::123456789012:role/xaccounts3access --role-session-name s3-access-example
@@ -69,22 +69,56 @@ load '/usr/local/lib/bats/load.bash'
 # aws ec2 describe-instances --region us-west-1
 
 setup() {
+    export AWS_ORGANISATION_ACCOUNTS='{
+    "Accounts": [
+        {
+            "Status": "ACTIVE",
+            "Name": "Example Test",
+            "Email": "blah@example.com",
+            "JoinedMethod": "CREATED",
+            "JoinedTimestamp": 1481835812.143,
+            "Id": "123456789012",
+            "Arn": "arn:aws:organizations::123456789012:account/o-exampleorgid/123456789012"
+        }
+      ]
+    }'
+
+    export AWS_CREDENTIALS='{
+      "Credentials": {
+         "Code": "Success",
+         "AccessKeyId": "ASIA9999999999999993",
+         "SecretAccessKey": "NW9999999999999999999999999999999999999z",
+         "SessionToken": "IQ9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999==",
+         "Expiration": "2021-05-11T14:00:49Z"
+      }
+    }'
+
+    stub aws \
+        "organizations list-accounts --no-paginate : echo ${AWS_ORGANISATION_ACCOUNTS}" \
+        "sts assume-role --role-arn arn:aws:iam::123456789012:role/env-level-admin --role-session-name example-test-session : echo ${AWS_CREDENTIALS}"
 
     stub jq \
-        "-r .Credentials.AccessKeyId : echo AKIAIOSFODNN7EXAMPLE" \
-        "-r .Credentials.SecretAccessKey : echo wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
-        "-r .Credentials.SessionToken : echo ABcDEFghIJkl...<rest-of-token>==" \
-        "--arg level_name_uppercase \"EXAMPLE TEST\" '.Accounts[] | select(.Name|ascii_upcase == $level_name_uppercase ).Id' : echo not-parsed-123456789012" \
-        "-r . : echo 123456789012"
+        "--arg env_level_name_uppercase \"EXAMPLE TEST\" '.Accounts[] | select(.Name|ascii_upcase == \$env_level_name_uppercase ).Id' : echo not-parsed-123456789012" \
+        "-r '.' : echo 123456789012" \
+        "-r '.Credentials.AccessKeyId' : echo AKIAIOSFODNN7EXAMPLE" \
+        "-r '.Credentials.SecretAccessKey' : echo wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
+        "-r '.Credentials.SessionToken' : echo ABcDEFghIJkl...<rest-of-token>=="
 }
 
 teardown() {
     unstub jq
+    unstub aws
 }
 
 @test "Test jq functionality" {
+    export ENV="example"
+    export LEVEL="test"
+
     run "$PWD/hooks/pre-command"
 
     assert_success
     assert_output --partial "finished"
+
+    unset ENV
+    unset LEVEL
 }

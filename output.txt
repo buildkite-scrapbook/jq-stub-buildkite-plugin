@@ -1,0 +1,36 @@
+1..1
+bats-mock(jq): got jq --arg env_level_name_uppercase EXAMPLE TEST .Accounts[] | select(.Name|ascii_upcase == $env_level_name_uppercase ).Id
+bats-mock(jq): got jq -r .
+bats-mock(jq): arguments [4] = '--arg' 'env_level_name_uppercase' 'EXAMPLE\ TEST' '.Accounts\[\]\ \|\ select\(.Name\|ascii_upcase\ ==\ \$env_level_name_uppercase\ \).Id' 
+bats-mock(jq): arguments [2] = '-r' '.' 
+bats-mock(jq): patterns  [4] = '--arg' 'env_level_name_uppercase' 'EXAMPLE\ TEST' '.Accounts\[\]\ \|\ select\(.Name\|ascii_upcase\ ==\ \$env_level_name_uppercase\ \).Id' 
+bats-mock(jq): patterns  [4] = '--arg' 'env_level_name_uppercase' 'EXAMPLE\ TEST' '.Accounts\[\]\ \|\ select\(.Name\|ascii_upcase\ ==\ \$env_level_name_uppercase\ \).Id' 
+bats-mock(jq): running echo not-parsed-123456789012
+bats-mock(jq): command result was 0
+bats-mock(jq): match failed at idx 0, expected '--arg', got '-r'
+bats-mock(jq): result 0
+bats-mock(jq): no plan row found
+bats-mock(jq): result 1
+bats-mock(jq): got jq -r .Credentials.AccessKeyId
+bats-mock(jq): arguments [2] = '-r' '.Credentials.AccessKeyId' 
+bats-mock(jq): patterns  [2] = '-r' '.' 
+bats-mock(jq): running echo 123456789012
+bats-mock(jq): command result was 0
+bats-mock(jq): result 1
+bats-mock(jq): got jq -r .Credentials.SecretAccessKey
+bats-mock(jq): arguments [2] = '-r' '.Credentials.SecretAccessKey' 
+bats-mock(jq): patterns  [2] = '-r' '.Credentials.AccessKeyId' 
+bats-mock(jq): match failed at idx 1, expected '.Credentials.AccessKeyId', got '.Credentials.SecretAccessKey'
+bats-mock(jq): no plan row found
+bats-mock(jq): result 1
+bats-mock(jq): got jq -r .Credentials.SessionToken
+bats-mock(jq): arguments [2] = '-r' '.Credentials.SessionToken' 
+bats-mock(jq): patterns  [2] = '-r' '.Credentials.SecretAccessKey' 
+bats-mock(jq): match failed at idx 1, expected '.Credentials.SecretAccessKey', got '.Credentials.SessionToken'
+bats-mock(jq): no plan row found
+bats-mock(jq): result 1
+bats-mock(jq): unstubbing
+not ok 1 Test jq functionality
+# (from function `unstub' in file /usr/local/lib/bats/bats-mock/stub.bash, line 70,
+#  from function `teardown' in test file tests/pre-command.bats, line 110)
+#   `unstub aws' failed
