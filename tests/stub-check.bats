@@ -10,10 +10,10 @@ function jq_tester {
 
 @test "jq args" {
 
-    _CURL_ARGS="--arg search_string_uppercase \"BATS TEST\" '.Accounts[] | select(.Name|ascii_upcase == \$search_string_uppercase).Id'"
+    _JQ_ARGS="--arg search_string_uppercase \"BATS TEST\" '.Accounts[] | select(.Name|ascii_upcase == \$search_string_uppercase).Id'"
 
     stub jq \
-        "${_CURL_ARGS} : echo $_CURL_ARGS"
+        "${_JQ_ARGS} : echo $_JQ_ARGS"
 
     run jq_tester
     assert_success
