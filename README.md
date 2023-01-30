@@ -41,3 +41,25 @@ So in order to use the same command multiple times, you would need to have the s
  
 
 It kind of defeats the purpose of a mock, in my honest opinion, but we can now have clarity around the use of the bats-mock stub and why it is "flaky" (sometimes fails and sometimes doesn't), since it depends on the number of invocations/usage of the same command with the same arguments.
+
+## Reference
+- https://github.com/buildkite-plugins/bats-mock/blob/master/tests/binstub.bats#L39
+```
+@test "Invoke a stub more than expected" {
+  stub mycommand "llamas : echo running llamas"
+
+  run bash -c "mycommand llamas"
+  [ "$status" -eq 0 ]
+  [ "$output" == "running llamas" ]
+
+  # More executions -> return failure
+  run bash -c "mycommand llamas"
+  [ "$status" -eq 1 ]
+  [ "$output" == "" ]
+
+  # and they also make unstubbing fail to fail the whole command
+  run unstub mycommand
+  [ "$status" -eq 1 ]
+  [[ "$output" == "" ]]
+}
+```
