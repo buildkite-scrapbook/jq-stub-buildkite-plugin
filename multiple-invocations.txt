@@ -1,0 +1,21 @@
+1..1
+bats-mock(jq): got jq -r .Credentials.AccessKeyId
+bats-mock(jq): arguments [2] = '-r' '.Credentials.AccessKeyId' 
+bats-mock(jq): patterns  [2] = '-r' '.Credentials.AccessKeyId' 
+bats-mock(jq): running echo ASIAExampleUsageAttempt1
+bats-mock(jq): command result was 0
+bats-mock(jq): result 0
+bats-mock(jq): got jq -r .Credentials.AccessKeyId
+bats-mock(jq): arguments [2] = '-r' '.Credentials.AccessKeyId' 
+bats-mock(jq): patterns  [2] = '-r' '.Credentials.AccessKeyId' 
+bats-mock(jq): running echo ASIAExampleUsageAttempt2
+bats-mock(jq): command result was 0
+bats-mock(jq): result 0
+bats-mock(jq): got jq -r .Credentials.AccessKeyId
+bats-mock(jq): arguments [2] = '-r' '.Credentials.AccessKeyId' 
+bats-mock(jq): patterns  [2] = '-r' '.Credentials.AccessKeyId' 
+bats-mock(jq): running exit 1
+bats-mock(jq): command result was 1
+bats-mock(jq): result 0
+bats-mock(jq): unstubbing
+ok 1 Multiple Invocations of Same Command and Same Arguments
